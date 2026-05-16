@@ -30,6 +30,7 @@ KAYAKONNECT
 Installation:
 - pip install customtkinter
 - pip install pyscopg2
+- pip install pillow
 
 ### Run instructions
 - python main.py

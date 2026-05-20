@@ -10,8 +10,8 @@ class CourierRegisterScreen:
         
         # Configure window
         self.root.title("KayaKonnect - Register as a Kaya")
-        self.root.geometry("500x700")
-        self.root.resizable(False, False)
+        self.root.geometry("1366x768")
+        self.root.resizable(True, True)
         
         # Set theme
         ctk.set_appearance_mode("light")
@@ -43,60 +43,33 @@ class CourierRegisterScreen:
         )
         subtitle_label.pack(pady=(0, 30))
         
-        # Username field
-        username_label = ctk.CTkLabel(
-            main_frame,
-            text="Username",
-            font=("Segoe UI", 12, "bold"),
-            text_color="#333"
-        )
-        username_label.pack(anchor="w", padx=40, pady=(10, 5))
-        
         self.username_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your username",
-            width=300,
-            height=45,
+            width=457,
+            height=46,
             font=("Segoe UI", 12),
             border_color="#ddd",
             border_width=1
         )
         self.username_entry.pack(padx=40, pady=(0, 15))
         
-        # Email field
-        email_label = ctk.CTkLabel(
-            main_frame,
-            text="Email",
-            font=("Segoe UI", 12, "bold"),
-            text_color="#333"
-        )
-        email_label.pack(anchor="w", padx=40, pady=(10, 5))
-        
         self.email_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your email",
-            width=300,
-            height=45,
+            width=457,
+            height=46,
             font=("Segoe UI", 12),
             border_color="#ddd",
             border_width=1
         )
         self.email_entry.pack(padx=40, pady=(0, 15))
         
-        # Password field
-        password_label = ctk.CTkLabel(
-            main_frame,
-            text="Password",
-            font=("Segoe UI", 12, "bold"),
-            text_color="#333"
-        )
-        password_label.pack(anchor="w", padx=40, pady=(10, 5))
-        
         self.password_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your password",
-            width=300,
-            height=45,
+            width=457,
+            height=46,
             font=("Segoe UI", 12),
             show="*",
             border_color="#ddd",
@@ -104,20 +77,13 @@ class CourierRegisterScreen:
         )
         self.password_entry.pack(padx=40, pady=(0, 15))
         
-        # Confirm Password field
-        confirm_pwd_label = ctk.CTkLabel(
-            main_frame,
-            text="Confirm Password",
-            font=("Segoe UI", 12, "bold"),
-            text_color="#333"
-        )
-        confirm_pwd_label.pack(anchor="w", padx=40, pady=(10, 5))
+        
         
         self.confirm_password_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Re-enter your password to confirm it",
-            width=300,
-            height=45,
+            width=457,
+            height=46,
             font=("Segoe UI", 12),
             show="*",
             border_color="#ddd",

@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from PIL import Image
 from services.auth_service import AuthService
 from config import DB_CONFIG
 
@@ -26,6 +27,18 @@ class CustomerRegisterScreen:
         main_frame = ctk.CTkFrame(self.root, fg_color="white")
         main_frame.pack(fill="both", expand=True)
         
+        # Load and display logo image
+        try:
+            logo_image = ctk.CTkImage(
+               light_image=Image.open("ui/ui-elements/logokk.png"),
+                size=(250, 150)
+            )
+            logo_label = ctk.CTkLabel(main_frame, image=logo_image, text="")
+            logo_label.image = logo_image
+            logo_label.pack(pady=(0, 0))
+        except Exception as e:
+            print(f"Could not load logo: {e}")
+        
         # Logo/Title
         title_label = ctk.CTkLabel(
             main_frame,
@@ -33,7 +46,7 @@ class CustomerRegisterScreen:
             font=("Segoe UI", 32, "bold"),
             text_color="#1a3a52"
         )
-        title_label.pack(pady=(40, 10))
+        title_label.pack(pady=(0, 0))
         
         subtitle_label = ctk.CTkLabel(
             main_frame,
@@ -43,33 +56,36 @@ class CustomerRegisterScreen:
         )
         subtitle_label.pack(pady=(0, 30))
         
+        # Username field
         self.username_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your username",
-            width=457,
-            height=46,
+            width=300,
+            height=45,
             font=("Segoe UI", 12),
             border_color="#ddd",
             border_width=1
         )
         self.username_entry.pack(padx=40, pady=(0, 15))
         
+        # Email field
         self.email_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your email",
-            width=457,
-            height=46,
+            width=300,
+            height=45,
             font=("Segoe UI", 12),
             border_color="#ddd",
             border_width=1
         )
         self.email_entry.pack(padx=40, pady=(0, 15))
         
+        # Password field
         self.password_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your password",
-            width=457,
-            height=46,
+            width=300,
+            height=45,
             font=("Segoe UI", 12),
             show="*",
             border_color="#ddd",
@@ -77,11 +93,12 @@ class CustomerRegisterScreen:
         )
         self.password_entry.pack(padx=40, pady=(0, 15))
         
+        # Confirm Password field
         self.confirm_password_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Re-enter your password to confirm it",
-            width=457,
-            height=46,
+            width=300,
+            height=45,
             font=("Segoe UI", 12),
             show="*",
             border_color="#ddd",
@@ -153,7 +170,7 @@ class CustomerRegisterScreen:
         success, message, user_id = self.auth.register_user(username, email, password, 'customer')
         
         if success:
-            self.show_error("")  # Clear error
+            self.show_error("")
             if self.on_register_success:
                 self.on_register_success(user_id)
             else:
@@ -168,7 +185,6 @@ class CustomerRegisterScreen:
     def on_login_click(self, event):
         """Handle login link click"""
         print("Navigate to login screen")
-        # This will be replaced with actual navigation
 
 
 # Main app (for testing)

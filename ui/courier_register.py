@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from PIL import Image
 from services.auth_service import AuthService
 from config import DB_CONFIG
 
@@ -26,6 +27,18 @@ class CourierRegisterScreen:
         main_frame = ctk.CTkFrame(self.root, fg_color="white")
         main_frame.pack(fill="both", expand=True)
         
+                # Load and display logo image
+        try:
+            logo_image = ctk.CTkImage(
+               light_image=Image.open("ui/ui-elements/logokk.png"),
+                size=(250, 150)
+            )
+            logo_label = ctk.CTkLabel(main_frame, image=logo_image, text="")
+            logo_label.image = logo_image
+            logo_label.pack(pady=(0, 0))
+        except Exception as e:
+            print(f"Could not load logo: {e}")
+        
         # Logo/Title
         title_label = ctk.CTkLabel(
             main_frame,
@@ -33,7 +46,7 @@ class CourierRegisterScreen:
             font=("Segoe UI", 32, "bold"),
             text_color="#1a3a52"
         )
-        title_label.pack(pady=(40, 10))
+        title_label.pack(pady=(0,0))
         
         subtitle_label = ctk.CTkLabel(
             main_frame,
@@ -47,7 +60,7 @@ class CourierRegisterScreen:
             main_frame,
             placeholder_text="Enter your username",
             width=457,
-            height=46,
+            height=45,
             font=("Segoe UI", 12),
             border_color="#ddd",
             border_width=1
@@ -58,7 +71,7 @@ class CourierRegisterScreen:
             main_frame,
             placeholder_text="Enter your email",
             width=457,
-            height=46,
+            height=45,
             font=("Segoe UI", 12),
             border_color="#ddd",
             border_width=1
@@ -69,7 +82,7 @@ class CourierRegisterScreen:
             main_frame,
             placeholder_text="Enter your password",
             width=457,
-            height=46,
+            height=45,
             font=("Segoe UI", 12),
             show="*",
             border_color="#ddd",
@@ -83,7 +96,7 @@ class CourierRegisterScreen:
             main_frame,
             placeholder_text="Re-enter your password to confirm it",
             width=457,
-            height=46,
+            height=45,
             font=("Segoe UI", 12),
             show="*",
             border_color="#ddd",
@@ -104,14 +117,14 @@ class CourierRegisterScreen:
         signup_button = ctk.CTkButton(
             main_frame,
             text="Sign Up",
-            width=300,
+            width=242,
             height=45,
             font=("Segoe UI", 14, "bold"),
             fg_color="#1a3a52",
             hover_color="#0f2538",
             command=self.register_user
         )
-        signup_button.pack(pady=20)
+        signup_button.pack(pady=10)
         
         # Login link
         login_frame = ctk.CTkFrame(main_frame, fg_color="white")

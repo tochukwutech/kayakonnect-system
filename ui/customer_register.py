@@ -31,7 +31,7 @@ class CustomerRegisterScreen:
         try:
             logo_image = ctk.CTkImage(
                light_image=Image.open("ui/ui-elements/logokk.png"),
-                size=(250, 150)
+                size=(200, 200)
             )
             logo_label = ctk.CTkLabel(main_frame, image=logo_image, text="")
             logo_label.image = logo_image

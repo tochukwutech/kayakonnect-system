@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-    
-=======
 """
-ui/login_screen.py
-PLACEHOLDER — Replace with teammate's actual customer login file.
+ui/courier_login.py
+PLACEHOLDER — Replace with teammate's actual courier login file.
 """
 
 import customtkinter as ctk
@@ -16,12 +13,11 @@ WHITE  = "#FFFFFF"
 LIGHT  = "#F0F4FF"
 
 
-class LoginScreen(ctk.CTkFrame):
+class CourierLogin(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent, fg_color=LIGHT, corner_radius=0)
         self.parent = parent
 
-        # Centred card
         card = ctk.CTkFrame(self, fg_color=WHITE, corner_radius=14, width=400, height=400)
         card.place(relx=0.5, rely=0.5, anchor="center")
         card.pack_propagate(False)
@@ -35,22 +31,19 @@ class LoginScreen(ctk.CTkFrame):
 
         ctk.CTkLabel(
             card,
-            text="Login to your Account",
+            text="Login to your Account  •  Courier",
             font=ctk.CTkFont("Arial", 13),
             text_color=NAVY
         ).pack(pady=(0, 20))
 
-        # Email
         self.email_entry = ctk.CTkEntry(card, placeholder_text="Email address",
                                         width=300, height=38)
         self.email_entry.pack(pady=6)
 
-        # Password
         self.pw_entry = ctk.CTkEntry(card, placeholder_text="Password",
                                      show="•", width=300, height=38)
         self.pw_entry.pack(pady=6)
 
-        # Login button
         ctk.CTkButton(
             card,
             text="Login",
@@ -60,18 +53,17 @@ class LoginScreen(ctk.CTkFrame):
             command=self._login
         ).pack(pady=(16, 6))
 
-        # Register link
         ctk.CTkButton(
             card,
-            text="Don't have an account? Register",
+            text="Don't have an account? Register as Kaya",
             fg_color="transparent", text_color=ORANGE,
             hover_color=LIGHT, font=ctk.CTkFont("Arial", 11),
-            command=lambda: parent.show_customer_register()
+            command=lambda: parent.show_courier_register()
         ).pack(pady=(0, 20))
 
         ctk.CTkLabel(
             card,
-            text="[ PLACEHOLDER — replace with teammate's login_screen.py ]",
+            text="[ PLACEHOLDER — replace with teammate's courier_login.py ]",
             font=ctk.CTkFont("Arial", 9),
             text_color="gray"
         ).pack(pady=(0, 10))
@@ -93,9 +85,8 @@ class LoginScreen(ctk.CTkFrame):
             conn.close()
 
             if user:
-                self.parent.show_customer_dashboard(customer_id=user["id"])
+                self.parent.show_courier_dashboard(courier_id=user["id"])
             else:
-                messagebox.showerror("Login Failed", "No customer found with that email.")
+                messagebox.showerror("Login Failed", "No courier found with that email.")
         except Exception as e:
             messagebox.showerror("DB Error", str(e))
->>>>>>> fcedbfb653d8341fa0c28c8dda0f6d78129628d9

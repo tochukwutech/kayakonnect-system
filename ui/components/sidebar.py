@@ -1,13 +1,6 @@
-"""
-ui/components/sidebar.py
-Reusable sidebar navigation component for KayaKonnect.
-Used by both CustomerDashboard and CourierDashboard.
-"""
-
 import customtkinter as ctk
 from PIL import Image
 
-# ── Brand colours ────────────────────────────────────────────
 NAVY       = "#1B2A6B"
 ORANGE     = "#F5A623"
 WHITE      = "#FFFFFF"
@@ -32,7 +25,6 @@ class Sidebar(ctk.CTkFrame):
         self._build_nav()
         self._build_signout()
 
-    # ── Logo ─────────────────────────────────────────────────
     def _build_logo(self):
         logo_frame = ctk.CTkFrame(self, fg_color="transparent")
         logo_frame.pack(fill="x", padx=16, pady=(20, 8))
@@ -59,7 +51,6 @@ class Sidebar(ctk.CTkFrame):
                 text_color=ORANGE
             ).pack(anchor="w")
 
-    # ── User info ─────────────────────────────────────────────
     def _build_user_info(self, user_name, user_role):
         ctk.CTkFrame(self, fg_color=HOVER_BG, height=1).pack(fill="x", padx=12)
 
@@ -84,7 +75,6 @@ class Sidebar(ctk.CTkFrame):
 
         ctk.CTkFrame(self, fg_color=HOVER_BG, height=1).pack(fill="x", padx=12)
 
-    # ── Nav buttons ───────────────────────────────────────────
     def _build_nav(self):
         nav_frame = ctk.CTkFrame(self, fg_color="transparent")
         nav_frame.pack(fill="both", expand=True, pady=10)
@@ -106,7 +96,6 @@ class Sidebar(ctk.CTkFrame):
             btn.pack(fill="x", padx=12, pady=3)
             self._buttons[label] = btn
 
-    # ── Sign out ──────────────────────────────────────────────
     def _build_signout(self):
         ctk.CTkFrame(self, fg_color=HOVER_BG, height=1).pack(fill="x", padx=12)
         ctk.CTkButton(
@@ -122,7 +111,6 @@ class Sidebar(ctk.CTkFrame):
             command=self.on_signout
         ).pack(fill="x", padx=12, pady=12)
 
-    # ── Public: update active highlight ──────────────────────
     def set_active(self, label: str):
         for lbl, btn in self._buttons.items():
             btn.configure(fg_color=ORANGE if lbl == label else "transparent")

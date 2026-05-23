@@ -11,7 +11,7 @@ class CustomerRegisterScreen:
         
         # Configure window
         self.root.title("KayaKonnect - Create Account")
-        self.root.geometry("1366x768")
+        self.root.state("zoomed")
         self.root.resizable(True, True)
         
         # Set theme
@@ -30,12 +30,12 @@ class CustomerRegisterScreen:
         # Load and display logo image
         try:
             logo_image = ctk.CTkImage(
-               light_image=Image.open("ui/ui-elements/logokk.png"),
-                size=(200, 200)
+                light_image=Image.open("ui-elements/logokk.png"),
+                size=(200, 100)
             )
             logo_label = ctk.CTkLabel(main_frame, image=logo_image, text="")
             logo_label.image = logo_image
-            logo_label.pack(pady=(0, 0))
+            logo_label.pack(pady=(30, 20))
         except Exception as e:
             print(f"Could not load logo: {e}")
         
@@ -46,7 +46,7 @@ class CustomerRegisterScreen:
             font=("Segoe UI", 32, "bold"),
             text_color="#1a3a52"
         )
-        title_label.pack(pady=(0, 0))
+        title_label.pack(pady=(40, 10))
         
         subtitle_label = ctk.CTkLabel(
             main_frame,
@@ -183,8 +183,14 @@ class CustomerRegisterScreen:
         self.error_label.configure(text=message)
     
     def on_login_click(self, event):
-        """Handle login link click"""
-        print("Navigate to login screen")
+        """Handle login link click - navigate to customer login"""
+        from ui.customer_login import CustomerLoginScreen
+        # Destroy register screen
+        self.root.destroy()
+        # Create new window for login
+        new_root = ctk.CTk()
+        login = CustomerLoginScreen(new_root)
+        new_root.mainloop()
 
 
 # Main app (for testing)

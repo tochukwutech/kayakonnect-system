@@ -11,7 +11,7 @@ class CourierRegisterScreen:
         
         # Configure window
         self.root.title("KayaKonnect - Register as a Kaya")
-        self.root.geometry("1366x768")
+        self.root.state("zoomed")
         self.root.resizable(True, True)
         
         # Set theme
@@ -27,15 +27,14 @@ class CourierRegisterScreen:
         main_frame = ctk.CTkFrame(self.root, fg_color="white")
         main_frame.pack(fill="both", expand=True)
         
-                # Load and display logo image
+        # Load and display logo image
         try:
             logo_image = ctk.CTkImage(
-               light_image=Image.open("ui/ui-elements/logokk.png"),
-                size=(250, 150)
+                light_image=Image.open("logokk.png")
             )
             logo_label = ctk.CTkLabel(main_frame, image=logo_image, text="")
             logo_label.image = logo_image
-            logo_label.pack(pady=(0, 0))
+            logo_label.pack(pady=(30, 20))
         except Exception as e:
             print(f"Could not load logo: {e}")
         
@@ -46,7 +45,7 @@ class CourierRegisterScreen:
             font=("Segoe UI", 32, "bold"),
             text_color="#1a3a52"
         )
-        title_label.pack(pady=(0,0))
+        title_label.pack(pady=(40, 10))
         
         subtitle_label = ctk.CTkLabel(
             main_frame,
@@ -56,10 +55,11 @@ class CourierRegisterScreen:
         )
         subtitle_label.pack(pady=(0, 30))
         
+        # Username field
         self.username_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your username",
-            width=457,
+            width=300,
             height=45,
             font=("Segoe UI", 12),
             border_color="#ddd",
@@ -67,10 +67,11 @@ class CourierRegisterScreen:
         )
         self.username_entry.pack(padx=40, pady=(0, 15))
         
+        # Email field
         self.email_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your email",
-            width=457,
+            width=300,
             height=45,
             font=("Segoe UI", 12),
             border_color="#ddd",
@@ -78,10 +79,11 @@ class CourierRegisterScreen:
         )
         self.email_entry.pack(padx=40, pady=(0, 15))
         
+        # Password field
         self.password_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Enter your password",
-            width=457,
+            width=300,
             height=45,
             font=("Segoe UI", 12),
             show="*",
@@ -90,12 +92,11 @@ class CourierRegisterScreen:
         )
         self.password_entry.pack(padx=40, pady=(0, 15))
         
-        
-        
+        # Confirm Password field
         self.confirm_password_entry = ctk.CTkEntry(
             main_frame,
             placeholder_text="Re-enter your password to confirm it",
-            width=457,
+            width=300,
             height=45,
             font=("Segoe UI", 12),
             show="*",
@@ -117,14 +118,14 @@ class CourierRegisterScreen:
         signup_button = ctk.CTkButton(
             main_frame,
             text="Sign Up",
-            width=242,
+            width=300,
             height=45,
             font=("Segoe UI", 14, "bold"),
             fg_color="#1a3a52",
             hover_color="#0f2538",
             command=self.register_user
         )
-        signup_button.pack(pady=10)
+        signup_button.pack(pady=20)
         
         # Login link
         login_frame = ctk.CTkFrame(main_frame, fg_color="white")
@@ -168,7 +169,7 @@ class CourierRegisterScreen:
         success, message, user_id = self.auth.register_user(username, email, password, 'courier')
         
         if success:
-            self.show_error("")  # Clear error
+            self.show_error("")
             if self.on_register_success:
                 self.on_register_success(user_id)
             else:
@@ -181,10 +182,16 @@ class CourierRegisterScreen:
         self.error_label.configure(text=message)
     
     def on_login_click(self, event):
-        """Handle login link click"""
-        print("Navigate to login screen")
-        # This will be replaced with actual navigation
-
+        """Handle login link click - navigate to courier login"""
+        from ui.courier_login import CourierLoginScreen
+        
+        # Destroy register screen
+        self.root.destroy()
+        
+        # Create new window for login
+        new_root = ctk.CTk()
+        login = CourierLoginScreen(new_root)
+        new_root.mainloop()
 
 # Main app (for testing)
 if __name__ == "__main__":

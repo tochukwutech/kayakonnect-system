@@ -1,6 +1,6 @@
 """
-ui/courier_register.py
-PLACEHOLDER — Replace with teammate's actual courier register file.
+ui/signup_screen.py
+PLACEHOLDER — Replace with teammate's actual customer register file.
 """
 
 import customtkinter as ctk
@@ -14,12 +14,12 @@ WHITE  = "#FFFFFF"
 LIGHT  = "#F0F4FF"
 
 
-class CourierRegister(ctk.CTkFrame):
+class SignupScreen(ctk.CTkFrame):
     def __init__(self, parent):
         super().__init__(parent, fg_color=LIGHT)
         self.parent = parent
 
-        card = ctk.CTkFrame(self, fg_color=WHITE, corner_radius=14, width=420, height=560)
+        card = ctk.CTkFrame(self, fg_color=WHITE, corner_radius=14, width=420, height=520)
         card.place(relx=0.5, rely=0.5, anchor="center")
         card.pack_propagate(False)
 
@@ -32,7 +32,7 @@ class CourierRegister(ctk.CTkFrame):
 
         ctk.CTkLabel(
             card,
-            text="Register as a Kaya",
+            text="Create your Account",
             font=ctk.CTkFont("Arial", 13),
             text_color=NAVY
         ).pack(pady=(0, 16))
@@ -53,10 +53,6 @@ class CourierRegister(ctk.CTkFrame):
         self.address_entry = ctk.CTkEntry(card, placeholder_text="Address",
                                           width=320, height=36)
         self.address_entry.pack(pady=4)
-
-        self.vehicle_entry = ctk.CTkEntry(card, placeholder_text="Vehicle Type (e.g. Motorcycle)",
-                                          width=320, height=36)
-        self.vehicle_entry.pack(pady=4)
 
         self.pw_entry = ctk.CTkEntry(card, placeholder_text="Password",
                                      show="•", width=320, height=36)
@@ -80,24 +76,23 @@ class CourierRegister(ctk.CTkFrame):
             text="Already have an account? Login",
             fg_color="transparent", text_color=NAVY,
             hover_color=LIGHT, font=ctk.CTkFont("Arial", 11),
-            command=lambda: parent.show_courier_login()
+            command=lambda: parent.show_customer_login()
         ).pack(pady=(0, 20))
 
         ctk.CTkLabel(
             card,
-            text="[ PLACEHOLDER — replace with teammate's courier_register.py ]",
+            text="[ PLACEHOLDER — replace with teammate's signup_screen.py ]",
             font=ctk.CTkFont("Arial", 9),
             text_color="gray"
         ).pack(pady=(0, 10))
 
     def _submit(self):
-        name    = self.name_entry.get().strip()
-        email   = self.email_entry.get().strip()
-        phone   = self.phone_entry.get().strip()
-        addr    = self.address_entry.get().strip()
-        vehicle = self.vehicle_entry.get().strip()
-        pw      = self.pw_entry.get()
-        pw2     = self.pw2_entry.get()
+        name  = self.name_entry.get().strip()
+        email = self.email_entry.get().strip()
+        phone = self.phone_entry.get().strip()
+        addr  = self.address_entry.get().strip()
+        pw    = self.pw_entry.get()
+        pw2   = self.pw2_entry.get()
 
         if not all([name, email, pw, pw2]):
             messagebox.showwarning("Missing Fields", "Please fill in all required fields.")
@@ -112,14 +107,13 @@ class CourierRegister(ctk.CTkFrame):
             conn = get_connection()
             cur  = conn.cursor()
             cur.execute("""
-                INSERT INTO couriers
-                    (full_name, email, phone, address, vehicle_type, password_hash)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (name, email, phone, addr, vehicle, pw_hash))
+                INSERT INTO customers (full_name, email, phone, address, password_hash)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (name, email, phone, addr, pw_hash))
             conn.commit()
             cur.close()
             conn.close()
-            messagebox.showinfo("Success", "Courier account created! Please login.")
-            self.parent.show_courier_login()
+            messagebox.showinfo("Success", "Account created! Please login.")
+            self.parent.show_customer_login()
         except Exception as e:
             messagebox.showerror("Error", str(e))

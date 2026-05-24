@@ -1,8 +1,3 @@
-"""
-ui/components/header.py
-Top header bar used across all dashboard screens.
-"""
-
 import customtkinter as ctk
 
 NAVY       = "#1B2A6B"
@@ -12,16 +7,6 @@ LIGHT_GRAY = "#F0F4FF"
 
 
 class Header(ctk.CTkFrame):
-    """
-    Top header bar showing a greeting and notification/minimize icons.
-
-    Parameters
-    ----------
-    parent    : parent widget
-    greeting  : e.g. 'Good morning, Amara!'
-    on_close  : callback for the ✕ button
-    on_mini   : callback for the — button
-    """
 
     def __init__(self, parent, greeting: str, on_close=None, on_mini=None):
         super().__init__(parent, fg_color=WHITE, height=56, corner_radius=0)

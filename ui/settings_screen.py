@@ -1,9 +1,3 @@
-"""
-ui/settings_screen.py
-Shared settings screen for both customers and couriers.
-Sections: Change Password | Notifications | Courier availability toggle
-"""
-
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox
@@ -27,15 +21,7 @@ def _hash_password(raw: str) -> str:
 
 
 class SettingsScreen(ctk.CTkFrame):
-    """
-    Settings screen shared by customers and couriers.
-
-    Parameters
-    ----------
-    parent    : KayaKonnectApp root window
-    user_id   : int
-    user_type : 'customer' or 'courier'
-    """
+    
 
     def __init__(self, parent, user_id: int, user_type: str):
         super().__init__(parent, fg_color=LIGHT, corner_radius=0)
@@ -51,9 +37,7 @@ class SettingsScreen(ctk.CTkFrame):
 
         self._build()
 
-    # ══════════════════════════════════════════════════════════
-    # BUILD
-    # ══════════════════════════════════════════════════════════
+
     def _build(self):
         name = self.user.get("full_name", "User") if self.user else "User"
         role = "Customer" if self.user_type == "customer" else "Courier"
@@ -97,7 +81,7 @@ class SettingsScreen(ctk.CTkFrame):
 
         self._build_danger_zone(scroll)
 
-    # ── Account info (read-only) ──────────────────────────────
+
     def _build_account_info(self, parent, name, role):
         card = self._section(parent, "Account Information")
 
@@ -124,7 +108,7 @@ class SettingsScreen(ctk.CTkFrame):
             command=lambda: self.parent.show_profile_screen(self.user_id, self.user_type)
         ).pack(anchor="w", padx=10, pady=(4, 10))
 
-    # ── Change password ───────────────────────────────────────
+
     def _build_change_password(self, parent):
         card = self._section(parent, "Change Password")
 
@@ -176,7 +160,7 @@ class SettingsScreen(ctk.CTkFrame):
         for f in self._pw_fields.values():
             f.delete(0, "end")
 
-    # ── Courier availability toggle ───────────────────────────
+
     def _build_availability_toggle(self, parent):
         card = self._section(parent, "Availability")
 
@@ -206,7 +190,7 @@ class SettingsScreen(ctk.CTkFrame):
         messagebox.showinfo("Availability Updated",
                             f"You are now marked as {status}.")
 
-    # ── Danger zone ───────────────────────────────────────────
+
     def _build_danger_zone(self, parent):
         card = self._section(parent, "Sign Out")
 
@@ -222,7 +206,7 @@ class SettingsScreen(ctk.CTkFrame):
         if messagebox.askyesno("Sign Out", "Are you sure you want to sign out?"):
             self.parent.show_role_selection()
 
-    # ── Helper ────────────────────────────────────────────────
+
     def _section(self, parent, title: str) -> ctk.CTkFrame:
         wrapper = ctk.CTkFrame(parent, fg_color="transparent")
         wrapper.pack(fill="x", pady=(0, 16))

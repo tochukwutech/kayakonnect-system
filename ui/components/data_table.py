@@ -1,8 +1,3 @@
-"""
-ui/components/data_table.py
-Reusable scrollable table widget for displaying database records.
-"""
-
 import customtkinter as ctk
 
 NAVY       = "#1B2A6B"
@@ -24,15 +19,6 @@ STATUS_COLORS = {
 
 
 class DataTable(ctk.CTkFrame):
-    """
-    Scrollable table with coloured status badges.
-
-    Parameters
-    ----------
-    parent  : parent widget
-    columns : list of column header strings
-    rows    : list of tuples/lists — one per row, matching columns order
-    """
 
     def __init__(self, parent, columns: list, rows: list, **kwargs):
         super().__init__(parent, fg_color=WHITE, corner_radius=10, **kwargs)
@@ -41,7 +27,6 @@ class DataTable(ctk.CTkFrame):
         self._build(rows)
 
     def _build(self, rows):
-        # ── Column headers ────────────────────────────────────
         header_frame = ctk.CTkFrame(self, fg_color=HEADER_BG, corner_radius=8)
         header_frame.pack(fill="x", padx=2, pady=(2, 0))
 
@@ -56,8 +41,7 @@ class DataTable(ctk.CTkFrame):
             ).grid(row=0, column=i, sticky="ew",
                    padx=(12 if i == 0 else 6), pady=8)
             header_frame.columnconfigure(i, weight=col_weights[i])
-
-        # ── Scrollable rows ───────────────────────────────────
+            
         scroll = ctk.CTkScrollableFrame(self, fg_color="transparent")
         scroll.pack(fill="both", expand=True, padx=2, pady=2)
 
@@ -93,7 +77,6 @@ class DataTable(ctk.CTkFrame):
                          padx=(12 if ci == 0 else 6), pady=4)
 
     def _col_weights(self):
-        """Give wider columns more weight."""
         n = len(self.columns)
         return [2 if i in (0, 1) else 1 for i in range(n)]
 

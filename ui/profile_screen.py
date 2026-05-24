@@ -1,10 +1,3 @@
-"""
-ui/profile_screen.py
-Shared profile screen for both customers and couriers.
-Displays and allows editing of: name, phone, address.
-Couriers also see vehicle type.
-"""
-
 import customtkinter as ctk
 from tkinter import messagebox
 
@@ -20,15 +13,7 @@ CARD_BG = "#FFFFFF"
 
 
 class ProfileScreen(ctk.CTkFrame):
-    """
-    Profile view/edit screen.
-
-    Parameters
-    ----------
-    parent    : KayaKonnectApp root window
-    user_id   : int
-    user_type : 'customer' or 'courier'
-    """
+    
 
     def __init__(self, parent, user_id: int, user_type: str):
         super().__init__(parent, fg_color=LIGHT, corner_radius=0)
@@ -44,15 +29,12 @@ class ProfileScreen(ctk.CTkFrame):
             self.user = queries.get_courier_by_id(user_id)
 
         self._build()
-
-    # ══════════════════════════════════════════════════════════
-    # BUILD
-    # ══════════════════════════════════════════════════════════
+        
     def _build(self):
         name = self.user.get("full_name", "User") if self.user else "User"
         role = "Customer" if self.user_type == "customer" else "Courier"
 
-        # Back button nav item
+        # Back button
         nav_items = [
             ("← Dashboard", "📊",
              lambda: self.parent.show_customer_dashboard(self.user_id)
@@ -79,14 +61,14 @@ class ProfileScreen(ctk.CTkFrame):
             on_mini     = lambda: self.parent.iconify()
         ).pack(fill="x")
 
-        # Centred card
+
         outer = ctk.CTkFrame(right, fg_color=LIGHT)
         outer.pack(fill="both", expand=True, padx=40, pady=30)
 
         card = ctk.CTkFrame(outer, fg_color=CARD_BG, corner_radius=14)
         card.pack(fill="both", expand=True)
 
-        # ── Avatar ────────────────────────────────────────────
+
         avatar_frame = ctk.CTkFrame(card, fg_color=NAVY,
                                     width=80, height=80, corner_radius=40)
         avatar_frame.pack(pady=(30, 6))
@@ -103,7 +85,7 @@ class ProfileScreen(ctk.CTkFrame):
                      font=ctk.CTkFont("Arial", 12),
                      text_color=ORANGE).pack(pady=(0, 16))
 
-        # ── Edit fields ───────────────────────────────────────
+
         form = ctk.CTkFrame(card, fg_color="transparent")
         form.pack(fill="x", padx=40, pady=10)
 
@@ -126,7 +108,7 @@ class ProfileScreen(ctk.CTkFrame):
                          font=ctk.CTkFont("Arial", 12),
                          text_color="gray", anchor="w").pack(fill="x", pady=(8, 0))
 
-            # Email is read-only
+
             if key == "email":
                 e = ctk.CTkEntry(form, height=36, state="disabled")
                 e.pack(fill="x")
@@ -140,7 +122,7 @@ class ProfileScreen(ctk.CTkFrame):
                     e.insert(0, default)
                 self._fields[key] = e
 
-        # ── Save button ───────────────────────────────────────
+
         ctk.CTkButton(
             card, text="Save Changes",
             fg_color=ORANGE, text_color=WHITE,
@@ -149,9 +131,7 @@ class ProfileScreen(ctk.CTkFrame):
             command=self._save
         ).pack(pady=(20, 30), padx=40, fill="x")
 
-    # ══════════════════════════════════════════════════════════
-    # SAVE
-    # ══════════════════════════════════════════════════════════
+
     def _save(self):
         full_name = self._fields.get("full_name", None)
         phone     = self._fields.get("phone", None)

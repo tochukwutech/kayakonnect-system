@@ -16,14 +16,7 @@ CARD_BG = "#FFFFFF"
 
 
 class CustomerDashboard(ctk.CTkFrame):
-    """
-    Main screen for logged-in customers.
-
-    Parameters
-    ----------
-    parent      : KayaKonnectApp root window
-    customer_id : int
-    """
+    
 
     def __init__(self, parent, customer_id: int):
         super().__init__(parent, fg_color=LIGHT, corner_radius=0)
@@ -35,10 +28,7 @@ class CustomerDashboard(ctk.CTkFrame):
 
         self._build_layout()
         self._show_page("Dashboard")
-
-    # ══════════════════════════════════════════════════════════
-    # LAYOUT
-    # ══════════════════════════════════════════════════════════
+        
     def _build_layout(self):
         name = self.customer.get("full_name", "Customer") if self.customer else "Customer"
 
@@ -74,9 +64,7 @@ class CustomerDashboard(ctk.CTkFrame):
         self.content = ctk.CTkFrame(self.right, fg_color=LIGHT, corner_radius=0)
         self.content.pack(fill="both", expand=True, padx=16, pady=12)
 
-    # ══════════════════════════════════════════════════════════
-    # PAGE ROUTING
-    # ══════════════════════════════════════════════════════════
+
     def _show_page(self, page_name):
         self.sidebar.set_active(page_name)
         for w in self.content.winfo_children():
@@ -87,9 +75,7 @@ class CustomerDashboard(ctk.CTkFrame):
         elif page_name == "Business Jobs":
             self._build_business_jobs_page()
 
-    # ══════════════════════════════════════════════════════════
-    # PAGE 1 — DASHBOARD
-    # ══════════════════════════════════════════════════════════
+
     def _build_dashboard_page(self):
         left = ctk.CTkFrame(self.content, fg_color="transparent")
         left.pack(side="left", fill="both", expand=True, padx=(0, 10))
@@ -102,7 +88,7 @@ class CustomerDashboard(ctk.CTkFrame):
         self._build_active_requests(left)
         self._build_new_request_form(right)
 
-    # ── Request History ───────────────────────────────────────
+
     def _build_request_history(self, parent):
         card = self._card(parent, "Request History")
         rows = queries.get_customer_request_history(self.customer_id)
@@ -124,7 +110,7 @@ class CustomerDashboard(ctk.CTkFrame):
             ctk.CTkLabel(card, text="No request history yet.",
                          text_color="gray").pack(pady=20)
 
-    # ── Active Requests ───────────────────────────────────────
+
     def _build_active_requests(self, parent):
         card = self._card(parent, "Active Requests")
 
@@ -189,12 +175,12 @@ class CustomerDashboard(ctk.CTkFrame):
                          text="No active requests.",
                          text_color="gray").pack(pady=12)
 
-    # ── New Courier Request (Sean's Pricing Engine) ───────────
+
     def _build_new_request_form(self, parent):
         card = self._card(parent, "New Courier Request")
         PAD  = 14
 
-        # ── Lead Size ─────────────────────────────────────────
+
         ctk.CTkLabel(card, text="Lead Size",
                      font=ctk.CTkFont("Arial", 11, "bold"),
                      text_color=NAVY, anchor="w").pack(fill="x", padx=PAD, pady=(12, 2))
@@ -210,7 +196,7 @@ class CustomerDashboard(ctk.CTkFrame):
                 command=self._update_price
             ).pack(side="left", padx=10, pady=8)
 
-        # ── Urgency ───────────────────────────────────────────
+
         ctk.CTkLabel(card, text="Urgency Level",
                      font=ctk.CTkFont("Arial", 11, "bold"),
                      text_color=NAVY, anchor="w").pack(fill="x", padx=PAD, pady=(0, 2))
@@ -223,7 +209,7 @@ class CustomerDashboard(ctk.CTkFrame):
             command=lambda _: self._update_price()
         ).pack(fill="x", padx=PAD, pady=(0, 10))
 
-        # ── Pickup ────────────────────────────────────────────
+
         ctk.CTkLabel(card, text="Pickup Location",
                      font=ctk.CTkFont("Arial", 11, "bold"),
                      text_color=NAVY, anchor="w").pack(fill="x", padx=PAD, pady=(0, 2))
@@ -234,7 +220,7 @@ class CustomerDashboard(ctk.CTkFrame):
         # Update price as user types
         self.pickup_entry.bind("<KeyRelease>", lambda e: self._update_price())
 
-        # ── Destination ───────────────────────────────────────
+
         ctk.CTkLabel(card, text="Destination",
                      font=ctk.CTkFont("Arial", 11, "bold"),
                      text_color=NAVY, anchor="w").pack(fill="x", padx=PAD, pady=(0, 2))
@@ -245,7 +231,7 @@ class CustomerDashboard(ctk.CTkFrame):
         # Update price as user types
         self.dest_entry.bind("<KeyRelease>", lambda e: self._update_price())
 
-        # ── Estimated Price display ───────────────────────────
+
         price_frame = ctk.CTkFrame(card, fg_color=NAVY, corner_radius=10)
         price_frame.pack(fill="x", padx=PAD, pady=(0, 10))
 
@@ -266,7 +252,7 @@ class CustomerDashboard(ctk.CTkFrame):
                      font=ctk.CTkFont("Arial", 9),
                      text_color="gray").pack(pady=(0, 10))
 
-        # ── Submit ────────────────────────────────────────────
+
         ctk.CTkButton(
             card, text="Submit Request",
             fg_color=ORANGE, text_color=WHITE,
@@ -314,9 +300,7 @@ class CustomerDashboard(ctk.CTkFrame):
                             f"Request {req_id} submitted!\nEstimated price: ₦{price_val:,.0f}")
         self._show_page("Dashboard")
 
-    # ══════════════════════════════════════════════════════════
-    # PAGE 2 — BUSINESS JOBS
-    # ══════════════════════════════════════════════════════════
+
     def _build_business_jobs_page(self):
         card = self._card(self.content, "All Delivery Requests")
         rows = queries.get_customer_request_history(self.customer_id)
@@ -340,16 +324,12 @@ class CustomerDashboard(ctk.CTkFrame):
             ctk.CTkLabel(card, text="No requests found.",
                          text_color="gray").pack(pady=20)
 
-    # ══════════════════════════════════════════════════════════
-    # SIGN OUT
-    # ══════════════════════════════════════════════════════════
+
     def _sign_out(self):
         if messagebox.askyesno("Sign Out", "Are you sure you want to sign out?"):
             self.parent.show_role_selection()
 
-    # ══════════════════════════════════════════════════════════
-    # HELPER
-    # ══════════════════════════════════════════════════════════
+
     def _card(self, parent, title: str) -> ctk.CTkFrame:
         wrapper = ctk.CTkFrame(parent, fg_color="transparent")
         wrapper.pack(fill="both", expand=True, pady=(0, 10))

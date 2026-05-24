@@ -7,7 +7,7 @@ from ui.components.header     import Header
 from ui.components.data_table import DataTable
 from database import queries
 
-# our color scheme
+# color scheme
 NAVY    = "#1B2A6B"
 ORANGE  = "#F5A623"
 WHITE   = "#FFFFFF"
@@ -32,9 +32,11 @@ class CourierDashboard(ctk.CTkFrame):
         name = self.courier.get("full_name", "Courier") if self.courier else "Courier"
 
         nav_items = [
-            ("Dashboard",   "⊞", lambda: self._show_tab("Dashboard")),
+            ("Dashboard",    "📊",  lambda: self._show_tab("Dashboard")),
             ("Available Jobs","📋", lambda: self._show_tab("Available Jobs")),
-            ("Connect",     "🤝", lambda: self._show_tab("Connect")),
+            ("Connect",      "🤝", lambda: self._show_tab("Connect")),
+            ("Profile",      "👤", lambda: self.parent.show_profile_screen(self.courier_id, "courier")),
+            ("Settings",     "⚙️", lambda: self.parent.show_settings_screen(self.courier_id, "courier")),
         ]
         self.sidebar = Sidebar(
             self,
@@ -70,7 +72,6 @@ class CourierDashboard(ctk.CTkFrame):
         self.content = ctk.CTkFrame(right, fg_color=LIGHT, corner_radius=0)
         self.content.pack(fill="both", expand=True, padx=16, pady=12)
 
-    # tab bar
     def _build_tab_bar(self):
         self._tab_buttons = {}
         tabs = ["Dashboard", "Available Jobs", "Connect"]
@@ -116,7 +117,8 @@ class CourierDashboard(ctk.CTkFrame):
         self._build_accepted_jobs(left)
         self._build_earnings_summary(right)
         self._build_earnings_chart(right)
-        
+
+    # accepted jobs
     def _build_accepted_jobs(self, parent):
         card = self._card(parent, "Accepted Jobs")
         jobs = queries.get_courier_accepted_jobs(self.courier_id)
@@ -138,6 +140,7 @@ class CourierDashboard(ctk.CTkFrame):
         else:
             ctk.CTkLabel(card, text="No accepted jobs yet.", text_color="gray").pack(pady=20)
 
+    # earning summary
     def _build_earnings_summary(self, parent):
         summary = queries.get_courier_earnings_summary(self.courier_id)
         card    = self._card(parent, "Earnings Summary")
@@ -155,7 +158,7 @@ class CourierDashboard(ctk.CTkFrame):
                          font=ctk.CTkFont("Arial", 18, "bold"),
                          text_color=NAVY, anchor="w").pack(fill="x", padx=10, pady=(0, 8))
 
-        # Completion ring (progress bar as proxy)
+        # Completion ring
         jobs  = summary.get("total_jobs", 0)
         total = max(jobs, 1)
         ctk.CTkLabel(card, text="Completion Rate",

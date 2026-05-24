@@ -14,15 +14,48 @@ WHITE   = "#FFFFFF"
 LIGHT   = "#F0F4FF"
 CARD_BG = "#FFFFFF"
 GREEN   = "#27AE60"
+RED     = "#FC8181"
 
+
+class DonutCanvas(tk.Canvas):
+    """Circular donut chart for incentive progress."""
+    def __init__(self, master, pct=0, size=140, **kwargs):
+        super().__init__(master, width=size, height=size,
+                         bg=CARD_BG, highlightthickness=0, **kwargs)
+        self._pct  = pct
+        self._size = size
+        self._draw()
+
+    def _draw(self):
+        s   = self._size
+        pad = 14
+        self.delete("all")
+        # Grey track
+        self.create_arc(pad, pad, s - pad, s - pad,
+                        start=0, extent=360,
+                        style="arc", outline="#E2E8F0", width=14)
+        # Coloured arc
+        extent = (self._pct / 100) * 360
+        self.create_arc(pad, pad, s - pad, s - pad,
+                        start=90, extent=-extent,
+                        style="arc", outline=ORANGE, width=14)
+        # Centre text
+        self.create_text(s // 2, s // 2,
+                         text=f"{self._pct}%",
+                         font=("Arial", 16, "bold"),
+                         fill=NAVY)
+
+    def update_pct(self, pct):
+        self._pct = pct
+        self._draw()
 
 class CourierDashboard(ctk.CTkFrame):
     def __init__(self, parent, courier_id: int):
         super().__init__(parent, fg_color=LIGHT, corner_radius=0)
 
-        self.parent    = parent
+        self.parent     = parent
         self.courier_id = courier_id
-        self.courier   = queries.get_courier_by_id(courier_id)
+        self.courier    = queries.get_courier_by_id(courier_id)
         self.current_tab = "Dashboard"
 
         self._build_layout()
@@ -32,11 +65,11 @@ class CourierDashboard(ctk.CTkFrame):
         name = self.courier.get("full_name", "Courier") if self.courier else "Courier"
 
         nav_items = [
-            ("Dashboard",    "📊",  lambda: self._show_tab("Dashboard")),
+            ("Dashboard",     "📊", lambda: self._show_tab("Dashboard")),
             ("Available Jobs","📋", lambda: self._show_tab("Available Jobs")),
-            ("Connect",      "🤝", lambda: self._show_tab("Connect")),
-            ("Profile",      "👤", lambda: self.parent.show_profile_screen(self.courier_id, "courier")),
-            ("Settings",     "⚙️", lambda: self.parent.show_settings_screen(self.courier_id, "courier")),
+            ("Connect",       "🤝", lambda: self._show_tab("Connect")),
+            ("Profile",       "👤", lambda: self.parent.show_profile_screen(self.courier_id, "courier")),
+            ("Settings",      "⚙️", lambda: self.parent.show_settings_screen(self.courier_id, "courier")),
         ]
         self.sidebar = Sidebar(
             self,
@@ -56,9 +89,9 @@ class CourierDashboard(ctk.CTkFrame):
         period = "morning" if hour < 12 else ("afternoon" if hour < 17 else "evening")
         self.header = Header(
             right,
-            greeting=f"Good {period}, {name.split()[0]} 👋",
-            on_close=lambda: self.parent.destroy(),
-            on_mini =lambda: self.parent.iconify()
+            greeting = f"Good {period}, {name.split()[0]} 👋",
+            on_close = lambda: self.parent.destroy(),
+            on_mini  = lambda: self.parent.iconify()
         )
         self.header.pack(fill="x")
 
@@ -94,8 +127,10 @@ class CourierDashboard(ctk.CTkFrame):
     def _show_tab(self, tab_name):
         self.current_tab = tab_name
         self._highlight_tab(tab_name)
-        self.sidebar.set_active(tab_name if tab_name in ["Dashboard", "Available Jobs", "Connect"] else "Dashboard")
-
+        self.sidebar.set_active(
+            tab_name if tab_name in ["Dashboard", "Available Jobs", "Connect"]
+            else "Dashboard"
+        )
         for w in self.content.winfo_children():
             w.destroy()
 
@@ -118,29 +153,83 @@ class CourierDashboard(ctk.CTkFrame):
         self._build_earnings_summary(right)
         self._build_earnings_chart(right)
 
-    # accepted jobs
+  
     def _build_accepted_jobs(self, parent):
         card = self._card(parent, "Accepted Jobs")
         jobs = queries.get_courier_accepted_jobs(self.courier_id)
-        cols = ["Request ID", "Date", "Customer", "From", "To", "Price (₦)", "Status"]
-        data = [
-            (
-                j["request_id"],
-                str(j["date_created"])[:10],
-                j.get("customer_name") or "—",
-                j["pickup_location"],
-                j["destination"],
-                f"₦{j['price']:,.0f}",
-                j["status"]
-            )
-            for j in jobs
-        ]
-        if data:
-            DataTable(card, columns=cols, rows=data).pack(fill="both", expand=True)
-        else:
-            ctk.CTkLabel(card, text="No accepted jobs yet.", text_color="gray").pack(pady=20)
 
-    # earning summary
+        if not jobs:
+            ctk.CTkLabel(card, text="No accepted jobs yet.",
+                         text_color="gray").pack(pady=20)
+            return
+
+        scroll = ctk.CTkScrollableFrame(card, fg_color="transparent")
+        scroll.pack(fill="both", expand=True, padx=8, pady=8)
+
+        for j in jobs:
+            job_card = ctk.CTkFrame(scroll, fg_color=LIGHT, corner_radius=10)
+            job_card.pack(fill="x", pady=6)
+
+            # ── Header row with ID + IN PROGRESS badge ────────
+            hdr = ctk.CTkFrame(job_card, fg_color=NAVY, corner_radius=8)
+            hdr.pack(fill="x", padx=10, pady=(10, 0))
+
+            ctk.CTkLabel(hdr, text=f"  {j['request_id']}",
+                         font=ctk.CTkFont("Arial", 11, "bold"),
+                         text_color=WHITE).pack(side="left", padx=4, pady=6)
+
+          
+            status     = j.get("status", "accepted")
+            badge_color = ORANGE if status in ("accepted", "in_progress") else GREEN
+            badge_text  = "IN PROGRESS" if status in ("accepted", "in_progress") else "COMPLETED"
+            ctk.CTkLabel(hdr, text=f"{badge_text}  ",
+                         font=ctk.CTkFont("Arial", 9, "bold"),
+                         text_color=WHITE,
+                         fg_color=badge_color,
+                         corner_radius=6).pack(side="right", padx=8, pady=6)
+
+          
+            body = ctk.CTkFrame(job_card, fg_color="transparent")
+            body.pack(fill="x", padx=14, pady=6)
+
+            ctk.CTkLabel(body,
+                         text=f"👤 {j.get('customer_name') or '—'}",
+                         font=ctk.CTkFont("Arial", 11),
+                         text_color=NAVY, anchor="w").pack(fill="x")
+            ctk.CTkLabel(body,
+                         text=f"📍 From: {j['pickup_location']}",
+                         font=ctk.CTkFont("Arial", 10),
+                         text_color="gray", anchor="w").pack(fill="x")
+            ctk.CTkLabel(body,
+                         text=f"🏁 To:    {j['destination']}",
+                         font=ctk.CTkFont("Arial", 10),
+                         text_color="gray", anchor="w").pack(fill="x")
+            ctk.CTkLabel(body,
+                         text=f"💰 ₦{j['price']:,.0f}",
+                         font=ctk.CTkFont("Arial", 11, "bold"),
+                         text_color=ORANGE, anchor="w").pack(fill="x", pady=(4, 0))
+
+          
+            if status in ("accepted", "in_progress"):
+                ctk.CTkButton(
+                    job_card,
+                    text="✔  Mark as Completed",
+                    fg_color=GREEN, text_color=WHITE,
+                    hover_color="#1E8449",
+                    font=ctk.CTkFont("Arial", 11, "bold"),
+                    height=34, corner_radius=8,
+                    command=lambda rid=j["request_id"]: self._complete_job(rid)
+                ).pack(anchor="e", padx=10, pady=(0, 10))
+
+    def _complete_job(self, request_id):
+        if messagebox.askyesno("Complete Job",
+                               f"Mark job {request_id} as completed?"):
+            queries.complete_job(self.courier_id, request_id)
+            messagebox.showinfo("Job Completed",
+                                f"Job {request_id} marked as completed!")
+            self._show_tab("Dashboard")
+
+  
     def _build_earnings_summary(self, parent):
         summary = queries.get_courier_earnings_summary(self.courier_id)
         card    = self._card(parent, "Earnings Summary")
@@ -158,21 +247,20 @@ class CourierDashboard(ctk.CTkFrame):
                          font=ctk.CTkFont("Arial", 18, "bold"),
                          text_color=NAVY, anchor="w").pack(fill="x", padx=10, pady=(0, 8))
 
-        # Completion ring
+      
         jobs  = summary.get("total_jobs", 0)
-        total = max(jobs, 1)
-        ctk.CTkLabel(card, text="Completion Rate",
-                     font=ctk.CTkFont("Arial", 11), text_color="gray").pack(pady=(8, 2))
-        ctk.CTkProgressBar(card, progress_color=ORANGE,
-                           fg_color=LIGHT).set(min(jobs / total, 1.0))
-        ctk.CTkProgressBar(card, progress_color=ORANGE,
-                           fg_color=LIGHT).pack(fill="x", padx=10, pady=(0, 10))
-        ctk.CTkLabel(card, text=f"{min(int(jobs/total*100), 100)}%",
-                     font=ctk.CTkFont("Arial", 14, "bold"),
-                     text_color=ORANGE).pack()
+        total = max(jobs, 10)   # out of 10 jobs = 100%
+        pct   = min(int((jobs / total) * 100), 100)
 
+        ctk.CTkLabel(card, text="Incentive Progress",
+                     font=ctk.CTkFont("Arial", 11), text_color="gray").pack(pady=(8, 4))
+
+        donut = DonutCanvas(card, pct=pct, size=130)
+        donut.pack(pady=(0, 10))
+
+  
     def _build_earnings_chart(self, parent):
-        card = self._card(parent, "Monthly Earnings")
+        card    = self._card(parent, "Monthly Earnings")
         monthly = queries.get_courier_monthly_earnings(self.courier_id)
 
         canvas = tk.Canvas(card, bg=WHITE, height=160, highlightthickness=0)
@@ -188,12 +276,11 @@ class CourierDashboard(ctk.CTkFrame):
         x_start  = 30
 
         for i, m in enumerate(monthly):
-            x0   = x_start + i * (bar_w + 8)
-            x1   = x0 + bar_w
-            h    = int((m["earnings"] / max_earn) * 120)
-            y0   = 145 - h
-            y1   = 145
-
+            x0 = x_start + i * (bar_w + 8)
+            x1 = x0 + bar_w
+            h  = int((m["earnings"] / max_earn) * 120)
+            y0 = 145 - h
+            y1 = 145
             canvas.create_rectangle(x0, y0, x1, y1, fill=ORANGE, outline="")
             canvas.create_text((x0+x1)//2, 155,
                                text=m["month"][:3],
@@ -202,6 +289,7 @@ class CourierDashboard(ctk.CTkFrame):
                                text=f"₦{int(m['earnings'])//1000}k",
                                fill=NAVY, font=("Arial", 7))
 
+  
     def _build_available_jobs_tab(self):
         card = self._card(self.content, "Available Jobs")
         jobs = queries.get_available_jobs()
@@ -211,14 +299,15 @@ class CourierDashboard(ctk.CTkFrame):
                          text_color="gray").pack(pady=20)
             return
 
-        cols = ["Request ID", "Customer", "From", "To", "Size", "Urgency", "Price (₦)", "Action"]
+        cols = ["Request ID", "Customer", "From", "To", "Size", "Urgency", "Price (₦)", "Actions"]
         header_frame = ctk.CTkFrame(card, fg_color=NAVY, corner_radius=8)
         header_frame.pack(fill="x", padx=2, pady=(2, 0))
         for ci, col in enumerate(cols[:-1]):
             ctk.CTkLabel(header_frame, text=col,
                          font=ctk.CTkFont("Arial", 11, "bold"),
                          text_color=WHITE, anchor="w").grid(
-                row=0, column=ci, sticky="ew", padx=(12 if ci == 0 else 6), pady=8)
+                row=0, column=ci, sticky="ew",
+                padx=(12 if ci == 0 else 6), pady=8)
             header_frame.columnconfigure(ci, weight=1)
 
         scroll = ctk.CTkScrollableFrame(card, fg_color="transparent")
@@ -245,22 +334,41 @@ class CourierDashboard(ctk.CTkFrame):
                     row=ri, column=ci, sticky="ew",
                     padx=(12 if ci == 0 else 6), pady=5)
 
+          
+            actions = ctk.CTkFrame(scroll, fg_color=bg)
+            actions.grid(row=ri, column=7, padx=6, pady=5)
+
             ctk.CTkButton(
-                scroll, text="Accept",
+                actions, text="Accept",
                 fg_color=GREEN, text_color=WHITE,
-                font=ctk.CTkFont("Arial", 11, "bold"),
-                width=70, height=28, corner_radius=6,
+                font=ctk.CTkFont("Arial", 10, "bold"),
+                width=64, height=28, corner_radius=6,
                 command=lambda rid=j["request_id"]: self._accept_job(rid)
-            ).grid(row=ri, column=7, padx=6, pady=5)
+            ).pack(side="left", padx=(0, 4))
+
+            ctk.CTkButton(
+                actions, text="Decline",
+                fg_color=RED, text_color=WHITE,
+                font=ctk.CTkFont("Arial", 10, "bold"),
+                width=64, height=28, corner_radius=6,
+                command=lambda rid=j["request_id"]: self._decline_job(rid)
+            ).pack(side="left")
 
     def _accept_job(self, request_id):
-        if messagebox.askyesno("Accept Job",
-                               f"Accept job {request_id}?"):
+        if messagebox.askyesno("Accept Job", f"Accept job {request_id}?"):
             queries.accept_job(self.courier_id, request_id)
             messagebox.showinfo("Job Accepted",
                                 f"You have accepted job {request_id}!")
             self._show_tab("Available Jobs")
 
+    def _decline_job(self, request_id):
+        if messagebox.askyesno("Decline Job",
+                               f"Decline job {request_id}?"):
+            messagebox.showinfo("Job Declined",
+                                f"Job {request_id} has been declined.")
+            self._show_tab("Available Jobs")
+
+  
     def _build_connect_tab(self):
         card = self._card(self.content, "Connect with Customers")
         pending = queries.get_available_jobs()
@@ -283,7 +391,6 @@ class CourierDashboard(ctk.CTkFrame):
             row = ctk.CTkFrame(scroll, fg_color=LIGHT, corner_radius=10)
             row.pack(fill="x", pady=5, padx=4)
 
-            # Avatar placeholder
             avatar = ctk.CTkFrame(row, fg_color=NAVY, width=48, height=48,
                                   corner_radius=24)
             avatar.pack(side="left", padx=12, pady=10)
@@ -310,15 +417,12 @@ class CourierDashboard(ctk.CTkFrame):
                 command=lambda rid=j["request_id"]: self._accept_job(rid)
             ).pack(side="right", padx=12)
 
+  
     def go_to_profile(self):
-        self.parent.show_profile_screen(
-            user_id=self.courier_id, user_type="courier"
-        )
+        self.parent.show_profile_screen(user_id=self.courier_id, user_type="courier")
 
     def go_to_settings(self):
-        self.parent.show_settings_screen(
-            user_id=self.courier_id, user_type="courier"
-        )
+        self.parent.show_settings_screen(user_id=self.courier_id, user_type="courier")
 
     def _sign_out(self):
         if messagebox.askyesno("Sign Out", "Are you sure you want to sign out?"):

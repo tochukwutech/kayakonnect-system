@@ -1,13 +1,3 @@
-"""
-ui/courier_dashboard.py
-Full Courier Dashboard for KayaKonnect.
-Added from Paul's code:
-  1. DonutCanvas — incentive progress ring
-  2. Mark as Complete button on accepted jobs
-  3. Decline button on available jobs
-  5. "IN PROGRESS" status badge on accepted jobs
-"""
-
 import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox
@@ -27,9 +17,6 @@ GREEN   = "#27AE60"
 RED     = "#FC8181"
 
 
-# ══════════════════════════════════════════════════════════
-# DONUT CANVAS — from Paul's code
-# ══════════════════════════════════════════════════════════
 class DonutCanvas(tk.Canvas):
     """Circular donut chart for incentive progress."""
     def __init__(self, master, pct=0, size=140, **kwargs):
@@ -62,10 +49,6 @@ class DonutCanvas(tk.Canvas):
         self._pct = pct
         self._draw()
 
-
-# ══════════════════════════════════════════════════════════
-# COURIER DASHBOARD
-# ══════════════════════════════════════════════════════════
 class CourierDashboard(ctk.CTkFrame):
     def __init__(self, parent, courier_id: int):
         super().__init__(parent, fg_color=LIGHT, corner_radius=0)
@@ -78,9 +61,6 @@ class CourierDashboard(ctk.CTkFrame):
         self._build_layout()
         self._show_tab("Dashboard")
 
-    # ══════════════════════════════════════════════════════════
-    # LAYOUT
-    # ══════════════════════════════════════════════════════════
     def _build_layout(self):
         name = self.courier.get("full_name", "Courier") if self.courier else "Courier"
 
@@ -125,7 +105,6 @@ class CourierDashboard(ctk.CTkFrame):
         self.content = ctk.CTkFrame(right, fg_color=LIGHT, corner_radius=0)
         self.content.pack(fill="both", expand=True, padx=16, pady=12)
 
-    # ── Tab bar ───────────────────────────────────────────────
     def _build_tab_bar(self):
         self._tab_buttons = {}
         tabs = ["Dashboard", "Available Jobs", "Connect"]
@@ -162,9 +141,6 @@ class CourierDashboard(ctk.CTkFrame):
         elif tab_name == "Connect":
             self._build_connect_tab()
 
-    # ══════════════════════════════════════════════════════════
-    # TAB 1 — DASHBOARD
-    # ══════════════════════════════════════════════════════════
     def _build_dashboard_tab(self):
         left = ctk.CTkFrame(self.content, fg_color="transparent")
         left.pack(side="left", fill="both", expand=True, padx=(0, 8))
@@ -177,7 +153,7 @@ class CourierDashboard(ctk.CTkFrame):
         self._build_earnings_summary(right)
         self._build_earnings_chart(right)
 
-    # ── Accepted Jobs (with IN PROGRESS badge + Mark Complete) ─
+  
     def _build_accepted_jobs(self, parent):
         card = self._card(parent, "Accepted Jobs")
         jobs = queries.get_courier_accepted_jobs(self.courier_id)
@@ -202,7 +178,7 @@ class CourierDashboard(ctk.CTkFrame):
                          font=ctk.CTkFont("Arial", 11, "bold"),
                          text_color=WHITE).pack(side="left", padx=4, pady=6)
 
-            # Status badge — IN PROGRESS / COMPLETED
+          
             status     = j.get("status", "accepted")
             badge_color = ORANGE if status in ("accepted", "in_progress") else GREEN
             badge_text  = "IN PROGRESS" if status in ("accepted", "in_progress") else "COMPLETED"
@@ -212,7 +188,7 @@ class CourierDashboard(ctk.CTkFrame):
                          fg_color=badge_color,
                          corner_radius=6).pack(side="right", padx=8, pady=6)
 
-            # ── Body ──────────────────────────────────────────
+          
             body = ctk.CTkFrame(job_card, fg_color="transparent")
             body.pack(fill="x", padx=14, pady=6)
 
@@ -233,7 +209,7 @@ class CourierDashboard(ctk.CTkFrame):
                          font=ctk.CTkFont("Arial", 11, "bold"),
                          text_color=ORANGE, anchor="w").pack(fill="x", pady=(4, 0))
 
-            # ── Mark Complete button (only if not completed) ──
+          
             if status in ("accepted", "in_progress"):
                 ctk.CTkButton(
                     job_card,
@@ -253,7 +229,7 @@ class CourierDashboard(ctk.CTkFrame):
                                 f"Job {request_id} marked as completed!")
             self._show_tab("Dashboard")
 
-    # ── Earnings Summary with Donut ───────────────────────────
+  
     def _build_earnings_summary(self, parent):
         summary = queries.get_courier_earnings_summary(self.courier_id)
         card    = self._card(parent, "Earnings Summary")
@@ -271,7 +247,7 @@ class CourierDashboard(ctk.CTkFrame):
                          font=ctk.CTkFont("Arial", 18, "bold"),
                          text_color=NAVY, anchor="w").pack(fill="x", padx=10, pady=(0, 8))
 
-        # Donut chart for incentive/completion progress
+      
         jobs  = summary.get("total_jobs", 0)
         total = max(jobs, 10)   # out of 10 jobs = 100%
         pct   = min(int((jobs / total) * 100), 100)
@@ -282,7 +258,7 @@ class CourierDashboard(ctk.CTkFrame):
         donut = DonutCanvas(card, pct=pct, size=130)
         donut.pack(pady=(0, 10))
 
-    # ── Earnings Bar Chart ────────────────────────────────────
+  
     def _build_earnings_chart(self, parent):
         card    = self._card(parent, "Monthly Earnings")
         monthly = queries.get_courier_monthly_earnings(self.courier_id)
@@ -313,9 +289,7 @@ class CourierDashboard(ctk.CTkFrame):
                                text=f"₦{int(m['earnings'])//1000}k",
                                fill=NAVY, font=("Arial", 7))
 
-    # ══════════════════════════════════════════════════════════
-    # TAB 2 — AVAILABLE JOBS (Accept + Decline buttons)
-    # ══════════════════════════════════════════════════════════
+  
     def _build_available_jobs_tab(self):
         card = self._card(self.content, "Available Jobs")
         jobs = queries.get_available_jobs()
@@ -360,7 +334,7 @@ class CourierDashboard(ctk.CTkFrame):
                     row=ri, column=ci, sticky="ew",
                     padx=(12 if ci == 0 else 6), pady=5)
 
-            # Actions frame with Accept + Decline
+          
             actions = ctk.CTkFrame(scroll, fg_color=bg)
             actions.grid(row=ri, column=7, padx=6, pady=5)
 
@@ -394,9 +368,7 @@ class CourierDashboard(ctk.CTkFrame):
                                 f"Job {request_id} has been declined.")
             self._show_tab("Available Jobs")
 
-    # ══════════════════════════════════════════════════════════
-    # TAB 3 — CONNECT
-    # ══════════════════════════════════════════════════════════
+  
     def _build_connect_tab(self):
         card = self._card(self.content, "Connect with Customers")
         pending = queries.get_available_jobs()
@@ -445,9 +417,7 @@ class CourierDashboard(ctk.CTkFrame):
                 command=lambda rid=j["request_id"]: self._accept_job(rid)
             ).pack(side="right", padx=12)
 
-    # ══════════════════════════════════════════════════════════
-    # NAVIGATION
-    # ══════════════════════════════════════════════════════════
+  
     def go_to_profile(self):
         self.parent.show_profile_screen(user_id=self.courier_id, user_type="courier")
 
@@ -458,9 +428,6 @@ class CourierDashboard(ctk.CTkFrame):
         if messagebox.askyesno("Sign Out", "Are you sure you want to sign out?"):
             self.parent.show_role_selection()
 
-    # ══════════════════════════════════════════════════════════
-    # HELPER
-    # ══════════════════════════════════════════════════════════
     def _card(self, parent, title: str) -> ctk.CTkFrame:
         wrapper = ctk.CTkFrame(parent, fg_color="transparent")
         wrapper.pack(fill="both", expand=True, pady=(0, 10))

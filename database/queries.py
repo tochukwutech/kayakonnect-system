@@ -297,3 +297,16 @@ def toggle_courier_availability(courier_id, is_available):
     conn.commit()
     cur.close()
     conn.close()
+
+def complete_job(courier_id, request_id):
+    """Mark a job as completed."""
+    conn = get_connection()
+    cur  = conn.cursor()
+    cur.execute("""
+        UPDATE delivery_requests
+        SET status = 'completed', date_updated = CURRENT_TIMESTAMP
+        WHERE request_id = %s AND courier_id = %s
+    """, (request_id, courier_id))
+    conn.commit()
+    cur.close()
+    conn.close()

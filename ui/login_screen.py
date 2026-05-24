@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    
+=======
+>>>>>>> dev
 """
 ui/login_screen.py
 PLACEHOLDER — Replace with teammate's actual customer login file.
@@ -95,3 +101,7 @@ class LoginScreen(ctk.CTkFrame):
                 messagebox.showerror("Login Failed", "No customer found with that email.")
         except Exception as e:
             messagebox.showerror("DB Error", str(e))
+<<<<<<< HEAD
+=======
+>>>>>>> fcedbfb653d8341fa0c28c8dda0f6d78129628d9
+>>>>>>> dev

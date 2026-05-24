@@ -1,10 +1,5 @@
-"""
-ui/courier_register.py
-PLACEHOLDER — Replace with teammate's actual courier register file.
-"""
-
 import customtkinter as ctk
-from tkinter import messagebox
+from PIL import Image
 import hashlib
 from database.db_connection import get_connection
 
@@ -16,94 +11,126 @@ LIGHT  = "#F0F4FF"
 
 class CourierRegister(ctk.CTkFrame):
     def __init__(self, parent):
-        super().__init__(parent, fg_color=LIGHT)
+        super().__init__(parent, fg_color=LIGHT, corner_radius=0)
         self.parent = parent
+        self._build()
 
-        card = ctk.CTkFrame(self, fg_color=WHITE, corner_radius=14, width=420, height=560)
-        card.place(relx=0.5, rely=0.5, anchor="center")
-        card.pack_propagate(False)
-
-        ctk.CTkLabel(
-            card,
-            text="KayaKonnect",
-            font=ctk.CTkFont("Arial", 22, "bold"),
-            text_color=ORANGE
-        ).pack(pady=(30, 2))
-
-        ctk.CTkLabel(
-            card,
-            text="Register as a Kaya",
-            font=ctk.CTkFont("Arial", 13),
-            text_color=NAVY
-        ).pack(pady=(0, 16))
-
-        # ── Fields defined individually (avoids loop binding issue) ──
-        self.name_entry = ctk.CTkEntry(card, placeholder_text="Full Name",
-                                       width=320, height=36)
-        self.name_entry.pack(pady=4)
-
-        self.email_entry = ctk.CTkEntry(card, placeholder_text="Email address",
-                                        width=320, height=36)
-        self.email_entry.pack(pady=4)
-
-        self.phone_entry = ctk.CTkEntry(card, placeholder_text="Phone number",
-                                        width=320, height=36)
-        self.phone_entry.pack(pady=4)
-
-        self.address_entry = ctk.CTkEntry(card, placeholder_text="Address",
-                                          width=320, height=36)
-        self.address_entry.pack(pady=4)
-
-        self.vehicle_entry = ctk.CTkEntry(card, placeholder_text="Vehicle Type (e.g. Motorcycle)",
-                                          width=320, height=36)
-        self.vehicle_entry.pack(pady=4)
-
-        self.pw_entry = ctk.CTkEntry(card, placeholder_text="Password",
-                                     show="•", width=320, height=36)
-        self.pw_entry.pack(pady=4)
-
-        self.pw2_entry = ctk.CTkEntry(card, placeholder_text="Confirm Password",
-                                      show="•", width=320, height=36)
-        self.pw2_entry.pack(pady=4)
-
+    def _build(self):
         ctk.CTkButton(
-            card,
-            text="Sign Up",
-            fg_color=ORANGE, text_color=WHITE,
-            font=ctk.CTkFont("Arial", 13, "bold"),
-            width=320, height=40, corner_radius=8,
-            command=self._submit
-        ).pack(pady=(14, 6))
-
-        ctk.CTkButton(
-            card,
-            text="Already have an account? Login",
+            self, text="←",
+            font=ctk.CTkFont("Arial", 20),
             fg_color="transparent", text_color=NAVY,
-            hover_color=LIGHT, font=ctk.CTkFont("Arial", 11),
-            command=lambda: parent.show_courier_login()
+            hover_color=LIGHT, width=40, height=40,
+            command=lambda: self.parent.show_courier_login()
+        ).place(x=20, y=20)
+
+        container = ctk.CTkFrame(self, fg_color="transparent")
+        container.place(relx=0.5, rely=0.5, anchor="center")
+
+        try:
+            logo_image = ctk.CTkImage(
+                light_image=Image.open("ui/ui-elements/logokk.png"),
+                dark_image=Image.open("ui/ui-elements/logokk.png"),
+                size=(280, 90)
+            )
+            ctk.CTkLabel(container, image=logo_image,
+                         text="").pack(pady=(0, 20))
+        except Exception:
+            ctk.CTkLabel(
+                container,
+                text="KayaKonnect",
+                font=ctk.CTkFont("Arial", 28, "bold"),
+                text_color=ORANGE
+            ).pack(pady=(0, 20))
+
+        ctk.CTkLabel(
+            container,
+            text="Register as a Kaya!",
+            font=ctk.CTkFont("Arial", 18, "bold"),
+            text_color=NAVY
         ).pack(pady=(0, 20))
 
+        self.name_entry    = self._field(container, "Full Name",        "Enter your full name")
+        self.email_entry   = self._field(container, "Email",            "Enter your email")
+        self.phone_entry   = self._field(container, "Phone Number",     "Enter your phone number")
+        self.vehicle_entry = self._field(container, "Vehicle Type",     "e.g. Motorcycle, Bicycle")
+        self.pw_entry      = self._field(container, "Password",         "Enter your password",               secret=True)
+        self.pw2_entry     = self._field(container, "Confirm Password", "Re-enter your password to confirm it", secret=True)
+
+        self.error_label = ctk.CTkLabel(
+            container, text="",
+            font=ctk.CTkFont("Arial", 11),
+            text_color="#E74C3C"
+        )
+        self.error_label.pack(pady=(4, 0))
+
+        ctk.CTkButton(
+            container,
+            text="Sign Up",
+            fg_color=NAVY, text_color=WHITE,
+            hover_color="#0f2538",
+            font=ctk.CTkFont("Arial", 14, "bold"),
+            width=480, height=50,
+            corner_radius=8,
+            command=self._submit
+        ).pack(pady=(12, 12))
+
+        link_row = ctk.CTkFrame(container, fg_color="transparent")
+        link_row.pack()
+
         ctk.CTkLabel(
-            card,
-            text="[ PLACEHOLDER — replace with teammate's courier_register.py ]",
-            font=ctk.CTkFont("Arial", 9),
-            text_color="gray"
-        ).pack(pady=(0, 10))
+            link_row,
+            text="Already have an account? ",
+            font=ctk.CTkFont("Arial", 12),
+            text_color=NAVY
+        ).pack(side="left")
+
+        login_link = ctk.CTkLabel(
+            link_row,
+            text="Log In",
+            font=ctk.CTkFont("Arial", 12, "bold"),
+            text_color=ORANGE,
+            cursor="hand2"
+        )
+        login_link.pack(side="left")
+        login_link.bind("<Button-1>", lambda e: self.parent.show_courier_login())
+
+    def _field(self, parent, label, placeholder, secret=False):
+        ctk.CTkLabel(
+            parent, text=label,
+            font=ctk.CTkFont("Arial", 13),
+            text_color=NAVY, anchor="w"
+        ).pack(fill="x", pady=(8, 2))
+
+        entry = ctk.CTkEntry(
+            parent,
+            placeholder_text=placeholder,
+            width=480, height=46,
+            font=ctk.CTkFont("Arial", 13),
+            border_color="#D0D5DD",
+            border_width=1,
+            corner_radius=8,
+            show="*" if secret else ""
+        )
+        entry.pack()
+        return entry
 
     def _submit(self):
         name    = self.name_entry.get().strip()
         email   = self.email_entry.get().strip()
         phone   = self.phone_entry.get().strip()
-        addr    = self.address_entry.get().strip()
         vehicle = self.vehicle_entry.get().strip()
         pw      = self.pw_entry.get()
         pw2     = self.pw2_entry.get()
 
         if not all([name, email, pw, pw2]):
-            messagebox.showwarning("Missing Fields", "Please fill in all required fields.")
+            self._show_error("Please fill in all required fields.")
             return
         if pw != pw2:
-            messagebox.showerror("Mismatch", "Passwords do not match.")
+            self._show_error("Passwords do not match.")
+            return
+        if len(pw) < 6:
+            self._show_error("Password must be at least 6 characters.")
             return
 
         pw_hash = hashlib.sha256(pw.encode()).hexdigest()
@@ -113,13 +140,17 @@ class CourierRegister(ctk.CTkFrame):
             cur  = conn.cursor()
             cur.execute("""
                 INSERT INTO couriers
-                    (full_name, email, phone, address, vehicle_type, password_hash)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (name, email, phone, addr, vehicle, pw_hash))
+                    (full_name, email, phone, vehicle_type, password_hash)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (name, email, phone, vehicle, pw_hash))
             conn.commit()
             cur.close()
             conn.close()
+            from tkinter import messagebox
             messagebox.showinfo("Success", "Courier account created! Please login.")
             self.parent.show_courier_login()
         except Exception as e:
-            messagebox.showerror("Error", str(e))
+            self._show_error(f"Error: {str(e)}")
+
+    def _show_error(self, message: str):
+        self.error_label.configure(text=message)
